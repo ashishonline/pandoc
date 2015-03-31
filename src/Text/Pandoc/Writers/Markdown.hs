@@ -929,7 +929,11 @@ inlineToMarkdown opts (Image attr alternate (source, tit)) = do
   linkPart <- inlineToMarkdown opts (Link txt (source, tit))
   return $ if plain
               then "[" <> linkPart <> "]"
-              else "!" <> linkPart <> attrsToMarkdown attr
+              else "!" <> linkPart <>
+                   if isEnabled Ext_common_link_attributes opts
+                      && attr /= nullAttr
+                      then attrsToMarkdown attr
+                      else empty
 inlineToMarkdown opts (Note contents) = do
   modify (\st -> st{ stNotes = contents : stNotes st })
   st <- get
